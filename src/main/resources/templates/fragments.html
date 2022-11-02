@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3" >
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!--------- Navigation --------->
+<nav th:fragment="navbar" class="navbar">
+    <input class="menu-btn" type="checkbox" id="menu-btn" />
+    <label class="menu-icon" for="menu-btn"><span class="nav-icon"></span></label>
+    <ul class="menu">
+        <li><a th:href="@{/product}" th:text="Product"></a></li>
+        <li><a th:href="@{|/projects/|}" th:text="Projects"></a></li>
+        <li sec:authorize="!isAuthenticated()"><a  th:href="@{/oauth2/authorization/auth0}">Login</a></li>
+        <li sec:authorize="isAuthenticated()"><a th:href="@{/logout}" th:text="Logout"></a></li>
+    </ul>
+</nav>
+
+
+
+</body>
+</html>

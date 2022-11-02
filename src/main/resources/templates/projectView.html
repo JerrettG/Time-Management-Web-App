@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3" lang="en">
+<link th:href="@{/css/styles.css}" rel="stylesheet" />
+<script src="https://kit.fontawesome.com/56465f43f1.js" crossorigin="anonymous"></script>
+<script src="https://cdn.tiny.cloud/1/e08x53wvefug99yh23abdil6lncenjbu0xxr8cvlks2o1gby/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+    tinymce.init({
+        selector: '#mytextarea'
+    });
+</script>
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${projectName}"></title>
+</head>
+<header></header>
+<body>
+    <th:block  th:replace="fragments :: navbar"></th:block>
+<!--------- Specific Project Table ----->
+    <div class="popup-screen"></div>
+    <div class="form">
+        <span class="close-icon"><i class="fa-solid fa-rectangle-xmark" style="background: none" onclick="document.querySelector('.form').style.display = 'none';document.querySelector('.popup-screen').style.display = 'none';"></i></span>
+        <h1>Create Task</h1>
+        <form th:action="@{|/projects/${projectName}/createTask|}" th:method="post">
+            <fieldset>
+                <input type="text" placeholder="Task Name" name="taskName" required/>
+                <textarea id="mytextarea" name="notes" th:placeholder="Notes"></textarea>
+                <button class="buttons submit_button" type="submit">Save</button>
+                <button class="buttons reset_cancel_button" type="reset">Reset</button>
+            </fieldset>
+        </form>
+    </div>
+
+    </div>
+
+    <div class="confirmation-dialogue">
+        <p>Are you sure you want to delete this? This action cannot be undone!</p>
+        <div class="confirmation-dialogue-buttons">
+            <button class="buttons delete-button" type="submit" form="delete-project">DELETE ANYWAY</button>
+            <button class="buttons keep-button" type="button" onclick="document.querySelector('.popup-screen').style.display = 'none';document.querySelector('.confirmation-dialogue').style.display='none';">KEEP</button>
+        </div>
+    </div>
+    <section>
+        <div class="project_task_display">
+            <div class="project-name">
+                <h1 th:text="${projectName}"></h1><span class="edit-icon"><i class="fa-solid fa-pen-to-square" style="font-size: 15px;color:gray;cursor:pointer;" onclick="document.querySelector('.edit-form').style.display = 'block'"></i></span>
+                <span class="delete-icon"><i class="fa-solid fa-trash" style="color:indianred;cursor:pointer;" onclick="document.querySelector('.confirmation-dialogue').style.display = 'block';document.querySelector('.popup-screen').style.display = 'flex';"></i></span>
+                <form id="delete-project" class="button_links" th:action="@{|/projects/${projectName}/delete|}"></form>
+            </div>
+            <form th:action="@{|/projects/${projectName}/editProjectName|}" th:method="post" class="edit-form">
+                <input class="form_input" placeholder="Updated project name" th:name="updatedProjectName">
+                <button class="buttons submit_button" type="submit">Save</button>
+                <button class="buttons reset_cancel_button" type="button" onclick="document.querySelector('.edit-form').style.display ='none'">Cancel</button>
+            </form>
+            <div id="project-time-spent">
+                <span>Total time spent on project:</span>
+                <span th:text="${project.getTotalTimeContributed()}"></span>
+            </div>
+            <div class="project-status">
+                <div id="project-completion-rate">
+                    <p>Completion</p>
+                    <progress th:value="${project.getCompletionPercent()}" max="100"></progress>
+                </div>
+                <div id="project-add-task-button">
+                    <button class="buttons" id="add_task_button" onclick="document.querySelector('.form').style.display = 'block';document.querySelector('.popup-screen').style.display = 'flex';">Add Task</button>
+                </div>
+            </div>
+                <table class="project_task_display_table">
+                    <thead>
+                        <tr>
+                            <th>Completed</th>
+                            <th>Task Name</th>
+                            <th>Time spent on task</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="task : ${toDoTasks}">
+                            <td><label class="container"><input disabled="disabled" type="checkbox" th:checked="${task.getCompletionStatus()} ? 'checked'"></button>
+                                <span class="checkmark"></span></label></td>
+                            <td><a th:text="${task.getTaskName()}" th:href="@{|/projects/${projectName}/task/${task.getTaskName()}|}"/></td>
+                            <td th:text="${task.getTimeSpentOnTask()}"></td>
+
+                        </tr>
+                    </tbody>
+                </table>
+        </div>
+    </section>
+</body>
+</html>

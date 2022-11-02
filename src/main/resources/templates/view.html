@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3" lang="en">
+<link th:href="@{/css/styles.css}" rel="stylesheet" />
+<head>
+    <meta charset="UTF-8">
+    <title th:text="|Projects - Timely|"></title>
+    <script src="https://cdn.tiny.cloud/1/e08x53wvefug99yh23abdil6lncenjbu0xxr8cvlks2o1gby/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+    <script>
+        tinymce.init({
+            selector: '#mytextarea'
+        });
+    </script>
+    <script src="https://kit.fontawesome.com/56465f43f1.js" crossorigin="anonymous"></script>
+</head>
+<body>
+<th:block th:replace="fragments :: navbar"></th:block>
+<!--------- Projects List ------->
+    <section class="projects">
+        <div class="popup-screen"></div>
+            <div class="form">
+                <span class="close-icon"><i class="fa-solid fa-rectangle-xmark" style="background: none" onclick="document.querySelector('.form').style.display = 'none';document.querySelector('.popup-screen').style.display = 'none';"></i></span>
+                <h1>Create Project</h1>
+                <form th:action="@{|/projects/createProject|}" th:method="post" id="create-project">
+                    <fieldset>
+                        <input type="text" placeholder="Project Name" th:name="projectName" required/>
+
+                        <input type="text" placeholder="Task Name" th:name="taskName" required/>
+                        <textarea id="mytextarea" name="notes" th:placeholder="Notes" ></textarea>
+
+                        <button class="buttons submit_button" type="submit" form="create-project">Save</button>
+                        <button class="buttons reset_cancel_button" type="reset">Reset</button>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+        <div class="projects_display">
+            <h1>Projects</h1>
+            <a class="button_links" ><button class="buttons" id="new_project_button" typ="button" onclick="document.querySelector('.form').style.display = 'block';document.querySelector('.popup-screen').style.display = 'flex';">Create new project</button></a>
+            <table class="projects_display_table">
+                <thead>
+                    <tr>
+                        <th>Row</th>
+                        <th>Project Name</th>
+                        <th>Completion rate</th>
+                        <th>Time Contributed</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="project,projectStat : ${projects}">
+                        <td  th:text="${projectStat.index+1}"></td>
+                        <td><a th:href="|/projects/${project.getProjectName()}|" th:text="${project.getProjectName()}"></a></td>
+                        <td><progress th:value="${project.getCompletionPercent()}" max="100"></progress></td>
+                        <td th:text="${project.getTotalTimeContributed()}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</body>
+</html>

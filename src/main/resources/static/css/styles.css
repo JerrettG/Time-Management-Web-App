@@ -1,0 +1,519 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    background-color: #ffffff;
+}
+li, a {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    color: #2c2c2c;
+    text-decoration: none;
+}
+img {
+    max-width: 100%;
+    width: auto;
+    height: auto;
+    max-height: 30em;
+    padding: 2em;
+}
+
+h1, h2, h3 {
+    padding: 1% 0%;
+}
+
+
+section {
+    padding-top: 6em;
+    padding-bottom: 6em;
+    margin-bottom: 6em;
+}
+
+.product_overview {
+    padding: 0 7.5%;
+}
+
+.navbar {
+    background-color: #fff;
+    box-shadow: 1px 1px 4px 0 rgba(0,0,0,0.2);
+    position: fixed;
+    width: 100%;
+    z-index: 3;
+}
+
+.navbar ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    overflow: hidden;
+    background-color: #fff;
+}
+
+.navbar ul a {
+    display: block;
+    padding: 20px;
+    text-decoration: none;
+}
+
+.navbar ul a:hover {
+    background-color: #ddd;
+}
+
+.navbar .logo {
+    float: left;
+    display: block;
+    font-size:2em;
+    padding: 10px 20px;
+}
+
+.navbar .menu {
+    clear: both;
+    max-height: 0;
+    transition: max-height 0.4s ease-out;
+}
+
+.navbar .menu-icon {
+    padding: 28px 20px;
+    position: relative;
+    float: right;
+    cursor: pointer;
+}
+
+.navbar .menu-icon .nav-icon {
+    background: #333;
+    display: block;
+    height: 2px;
+    width: 18px;
+    position: relative;
+    transition: background 0.2s ease-out;
+}
+
+.navbar .menu-icon .nav-icon:before {
+    background: #333;
+    content:"";
+    display: block;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    transition: all 0.2s ease-out;
+    top:5px;
+}
+
+.navbar .menu-icon .nav-icon:after {
+    background: #333;
+    content:"";
+    display: block;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    transition: all .2s ease-out;
+    top: -5px;
+}
+
+.navbar .menu-btn {
+    display: none;
+}
+
+.navbar .menu-btn:checked ~ .menu {
+    max-height:240px;
+}
+
+.navbar .menu-btn:checked ~ .menu-icon .nav-icon {
+    background: transparent;
+}
+
+.navbar .menu-btn:checked ~ .menu-icon .nav-icon:before {
+    transform: rotate(-45deg);
+    top: 0;
+}
+
+.navbar .menu-btn:checked ~ .menu-icon .nav-icon:after {
+    transform: rotate(45deg);
+    top: 0;
+}
+
+@media (min-width:60em) {
+
+    .navbar li {
+        float: left;
+    }
+    .navbar li a {
+        padding:20px 30px;
+    }
+    .navbar .menu {
+        clear: none;
+        float: right;
+        max-height: none;
+    }
+    .navbar .menu-icon {
+        display: none;
+    }
+}
+body {
+    margin: 0;
+    padding: 0 0 7.5%;
+    font-family: "Montserrat", sans-serif;
+    color: black;
+    justify-content: space-between;
+    align-items: center;
+}
+/* Buttons */
+.button_links {
+    background: none;
+}
+
+.buttons {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    font-size: 10px;
+    color: #edf0f1;
+    padding: 9px 9px;
+    min-width: 16em;
+    margin: 3px;
+    border:none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease 0s;
+}
+
+.buttons:hover {
+    opacity: 1;
+}
+
+#new_project_button {
+    background-color: rgb(217, 130, 84);
+}
+#new_project_button:hover {
+    background-color: rgba(255, 166, 98, 0.8);
+}
+#delete_project_button, #delete_task_button {
+    background-color: rgb(187, 51, 47);
+}
+#delete_project_button:hover {
+    background-color: rgba(248, 59, 59,0.8);
+}
+#add_task_button {
+    background-color: rgb(59, 140, 63);
+}
+#add_task_button:hover {
+    background-color: rgba(93, 213, 97,0.8);
+}
+
+#mark_task_complete_button {
+    background-color: rgb(59, 140, 63);
+}
+#mark_task_complete_button:hover {
+    background-color: rgba(93, 213, 97,0.8);
+}
+
+#start_task_button {
+    background-color: rgb(70, 151, 169);
+}
+#start_task_button:hover {
+    background-color: rgba(96, 214, 239, 0.8);
+}
+
+#stop_task_button {
+    background-color: rgb(138, 138, 138);
+}
+#stop_task_button:hover {
+    background-color: rgba(182, 182, 182, 0.8);
+}
+.submit_button {
+    background-color: rgba(0,102,162,1);
+}
+.submit_button:hover {
+    background-color: rgba(176, 175, 175, 0.8);
+}
+.reset_cancel_button {font-family: "Montserrat", sans-serif;
+    background-color: rgb(175, 171, 152);
+}
+.reset_cancel_button:hover  {
+    background-color: rgba(175, 171, 152,0.8);
+}
+.keep-button {
+    background-color: rgb(87, 180, 98);
+}
+.delete-button {
+    background: rgb(189, 84, 80);
+}
+
+
+.project-name h1, .task-name h1 {
+    display:inline;
+}
+.edit-icon {
+    position:relative;
+    bottom:8px;
+}
+.delete-icon {
+    float:right;
+}
+
+.projects_display, .project_task_display {
+    min-width: 40em;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    background: none;
+    font-family: "Montserrat", sans-serif;
+    padding: 7.5%;
+}
+.projects_display_table, .project_task_display_table{
+    border-radius: 8px;
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 0.9em;
+    min-width: 400px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.50);
+    background-color: #90bef1;
+}
+.projects_display_table thead,tr, .project_task_display_table thead, tr {
+    background: none;
+    text-align: left;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+.projects_display_table th,.projects_display_table td,
+.project_task_display_table th,.project_task_display_table td{
+    background: none;
+    padding: 12px 15px;
+}
+
+.projects_display_table tbody, tr,a, .project_task_display_table tbody, tr, a{
+    background: none;
+}
+
+.projects_display_table td a:hover, .project_task_display_table td a:hover{
+    background: none;
+    transition: all 0.3s ease 0s;
+    color: #9d9d9d;
+    cursor: pointer;
+}
+
+/*Specific project view*/
+.project_task_display {
+    background: none;
+    font-family: "Montserrat", sans-serif;
+}
+input[type=checkbox] {
+    visibility: hidden;
+}
+input[type=checkbox]:checked:disabled {
+/* Style the checkmark/indicator */
+    display: block;
+
+    content: "";
+    position: absolute;
+
+    left: 9px;
+    top: 5px;
+    width: 5px;
+    height: 10px;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+    padding: 3px;
+    margin: 3px;
+}
+/* Customize the label (the container) */
+.container {
+    display: block;
+    position: relative;
+    left:20px;
+    bottom: 11px;
+    padding-left: 35px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    font-size: 22px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Hide the browser's default checkbox */
+.container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+/* Create a custom checkbox */
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 25px;
+    width: 25px;
+    background:none;
+    padding: 3px;
+}
+
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+/* Show the checkmark when checked */
+.container input:checked ~ .checkmark:after {
+    display: block;
+}
+
+/* Style the checkmark/indicator */
+.container .checkmark:after {
+    left: 9px;
+    top: 5px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+/* When the radio button is checked, add a blue background */
+.container input:checked ~ .checkmark {
+    background-color: darkgreen;
+    border-radius: 50%;
+}
+
+#notes_display {
+    border: none;
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 0.9em;
+    min-width: 400px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    background-color: #5c636a;
+}
+.form {
+    display: none;
+    position:fixed;
+    left: 17.5%;
+    right:25%;
+    top:25%;
+    width: 48em;
+    margin: auto;
+    padding: 40px;
+    background-color: #9a94b4;
+    border:none;
+    border-radius: 10px;
+    border-collapse: collapse;
+    font-size: 0.9em;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.40);
+    z-index: 11;
+}
+.form h1{
+    background: none;
+    padding-bottom: 1%;
+    padding-top: 1%;
+}
+.form fieldset{
+    background-color: #9a94b4;
+    border: none;
+    text-align: left;
+}
+.form label, .form input {
+    margin: 3% 0;
+    background: none;
+}
+.form input {
+    border-width: thin;
+    background: white;
+    color: black;
+    border-radius: 3px;
+    border-color: #646464;
+    display: block;
+    width: 290px;
+    padding: 5px;
+    transition: all 0.3s ease 0s;
+}
+.form_input {
+    background: white;
+    color: black;
+    border-color: #646464;
+    border-radius: 3px;
+    display: block;
+    transition: all 0.3s ease 0s;
+}
+#mytextarea {
+    border-radius: 10px;
+    border-width: thin;
+}
+input {
+    margin: 3px;
+    padding: 5px;
+    border-radius: 8px;
+    border-width: thin;
+    border-color: #646464;
+
+}
+
+.edit-form {
+    display: none;
+}
+
+.popup-screen {
+    display: none;
+    z-index: 10;
+    position: fixed;
+    background: rgba(255,255,255, 0.1);
+    -webkit-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    width: 100%;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+}
+
+.close-icon {
+    float:right;
+    background: none;
+    cursor:pointer;
+}
+
+.confirmation-dialogue {
+    display: none;
+    position:fixed;
+    left: 25%;
+    right:25%;
+    top:25%;
+    width: 40em;
+    margin: auto;
+    padding: 40px;
+    background-color: #9d9d9d;
+    border:none;
+    border-radius: 10px;
+    border-collapse: collapse;
+    font-size: 0.9em;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.40);
+    z-index: 11;
+}
+.confirmation-dialogue p {
+    background: none;
+    padding: 5px;
+}
+
+.confirmation-dialogue-buttons {
+    display:flex;
+    justify-content: center;
+    background: none;
+}
+
+.project-status {
+    display: flex;
+    justify-content: space-between;
+}
+
+
+
