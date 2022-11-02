@@ -54,7 +54,7 @@ public class ProjectService {
      */
     public boolean addProject(String username, String projectName,String taskName, String notes) {
         if (getProjectByProjectName(username, projectName) == null) {
-        Project project = Project.builder().username(username).projectName(projectName.strip()).build();
+        Project project = new Project(username, projectName.strip());
         Task task = new Task(taskName.strip(), notes);
         project.getTasks().add(task);
         projectRepository.save(ProjectConverter.convertToRecord(project));

@@ -25,7 +25,7 @@ public class TaskListConverter {
                 .taskName(taskRecord.getTaskName())
                 .notes(taskRecord.getNotes())
                 .timeSpentOnTask(taskRecord.getTimeSpentOnTask())
-                .completionStatus(taskRecord.isCompletionStatus())
+                .completionStatus(taskRecord.getCompletionStatus())
                 .timeLogs(TimeLogListConverter.convertFromRecord(taskRecord.getTimeLogRecords()))
                 .build()));
         return taskList;

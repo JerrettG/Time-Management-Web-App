@@ -1,6 +1,9 @@
 package com.gonsalves.TimeManagementSystem;
 
 import com.gonsalves.TimeManagementSystem.repository.ProjectRepository;
+import com.gonsalves.TimeManagementSystem.repository.model.ProjectRecord;
+import com.gonsalves.TimeManagementSystem.repository.model.TaskRecord;
+import com.gonsalves.TimeManagementSystem.repository.model.TimeLogRecord;
 import com.gonsalves.TimeManagementSystem.service.model.Project;
 import com.gonsalves.TimeManagementSystem.service.model.Task;
 import com.gonsalves.TimeManagementSystem.service.model.TimeLog;
@@ -29,6 +32,7 @@ public class ProjectRecordServiceTest {
     private final String EXISTING_USERNAME = "User";
     private final String EXISTING_PROJECT_NAME = "Test Project";
     private final Project EXISTING_PROJECT = new Project(EXISTING_USERNAME, EXISTING_PROJECT_NAME);
+    private final ProjectRecord EXISTING_PROJECT_RECORD = ProjectRecord.builder().username(EXISTING_USERNAME).projectName(EXISTING_PROJECT_NAME).taskRecords(new ArrayList<>()).build();
 
     @BeforeEach
     public void beforeEach() {
@@ -39,7 +43,7 @@ public class ProjectRecordServiceTest {
     public void getProjectByProjectName_existingProjectForUser_returnsCorrectProject() {
         //GIVEN
         //WHEN
-        when(projectRepository.loadProjectByProjectName(EXISTING_USERNAME, EXISTING_PROJECT_NAME)).thenReturn(Arrays.asList(EXISTING_PROJECT));
+        when(projectRepository.loadProjectByProjectName(EXISTING_USERNAME, EXISTING_PROJECT_NAME)).thenReturn(Arrays.asList(EXISTING_PROJECT_RECORD));
         Project result = projectService.getProjectByProjectName(EXISTING_USERNAME, EXISTING_PROJECT_NAME);
         //THEN
         assertEquals(EXISTING_PROJECT_NAME,result.getProjectName(), String.format("Expected to return Project with Project name: %s",result.getProjectName()));
@@ -78,7 +82,7 @@ public class ProjectRecordServiceTest {
     @Test
     public void listUserProjects_existingProjects_returnsAllProjects() {
         //GIVEN
-        List<Project> expectedUserProjects = new ArrayList<>(Arrays.asList(EXISTING_PROJECT));
+        List<ProjectRecord> expectedUserProjects = new ArrayList<>(Arrays.asList(EXISTING_PROJECT_RECORD));
         //WHEN
         when(projectRepository.loadAllProjectsByUsername(EXISTING_USERNAME)).thenReturn(expectedUserProjects);
         List<Project> result = projectService.listUserProjects(EXISTING_USERNAME);
@@ -108,11 +112,11 @@ public class ProjectRecordServiceTest {
     public void deleteProject_callsMapperDeleteMethod() {
         //GIVEN
         //WHEN
-        when(projectRepository.loadProjectByProjectName(EXISTING_USERNAME, EXISTING_PROJECT_NAME)).thenReturn(Arrays.asList(EXISTING_PROJECT));
-        doNothing().when(projectRepository).delete(EXISTING_PROJECT);
+        when(projectRepository.loadProjectByProjectName(EXISTING_USERNAME, EXISTING_PROJECT_NAME)).thenReturn(Arrays.asList(EXISTING_PROJECT_RECORD));
+        doNothing().when(projectRepository).delete(EXISTING_PROJECT_RECORD);
         projectService.deleteProject(EXISTING_USERNAME, EXISTING_PROJECT_NAME);
         //THEN
-        verify(projectRepository).delete(EXISTING_PROJECT);
+        verify(projectRepository).delete(EXISTING_PROJECT_RECORD);
     }
 
     @Test
@@ -121,12 +125,12 @@ public class ProjectRecordServiceTest {
         String oldProjectName = EXISTING_PROJECT_NAME;
         String changedName = UUID.randomUUID().toString();
         //WHEN
-        when(projectRepository.loadProjectByProjectName(EXISTING_USERNAME, oldProjectName)).thenReturn(Arrays.asList(EXISTING_PROJECT));
-        doNothing().when(projectRepository).updateData(eq(EXISTING_USERNAME), eq(oldProjectName), any(Project.class));
+        when(projectRepository.loadProjectByProjectName(EXISTING_USERNAME, oldProjectName)).thenReturn(Arrays.asList(EXISTING_PROJECT_RECORD));
+        doNothing().when(projectRepository).updateData(eq(EXISTING_USERNAME), eq(oldProjectName), any(ProjectRecord.class));
         projectService.editProjectName(EXISTING_USERNAME, oldProjectName, changedName);
 
         //THEN
-        verify(projectRepository).updateData(EXISTING_USERNAME, oldProjectName, EXISTING_PROJECT);
+        verify(projectRepository).updateData(eq(EXISTING_USERNAME), eq(oldProjectName), any(ProjectRecord.class));
     }
 
     @Test
@@ -138,11 +142,11 @@ public class ProjectRecordServiceTest {
         task.setTaskName(taskName);
         task.setNotes(notes);
         //WHEN
-        when(projectRepository.loadProjectByProjectName(EXISTING_USERNAME, EXISTING_PROJECT_NAME)).thenReturn(Arrays.asList(EXISTING_PROJECT));
+        when(projectRepository.loadProjectByProjectName(EXISTING_USERNAME, EXISTING_PROJECT_NAME)).thenReturn(Arrays.asList(EXISTING_PROJECT_RECORD));
         projectService.createNewTask(EXISTING_USERNAME, EXISTING_PROJECT_NAME, taskName, notes);
 
         //THEN
-        verify(projectRepository).updateData(EXISTING_USERNAME, EXISTING_PROJECT_NAME, EXISTING_PROJECT);
+        verify(projectRepository).updateData(eq(EXISTING_USERNAME), eq(EXISTING_PROJECT_NAME), any(ProjectRecord.class));
     }
     @Test
     public void deleteTask_existingTask_removesTaskFromListOfTasksForProject() {
@@ -155,13 +159,11 @@ public class ProjectRecordServiceTest {
         int expected = EXISTING_PROJECT.getTasks().size();
         EXISTING_PROJECT.getTasks().add(task);
         //WHEN
-        when(projectRepository.loadProjectByProjectName(EXISTING_USERNAME, EXISTING_PROJECT_NAME)).thenReturn(Arrays.asList(EXISTING_PROJECT));
-        doNothing().when(projectRepository).updateData(EXISTING_USERNAME, EXISTING_PROJECT_NAME, EXISTING_PROJECT);
+        when(projectRepository.loadProjectByProjectName(EXISTING_USERNAME, EXISTING_PROJECT_NAME)).thenReturn(Arrays.asList(EXISTING_PROJECT_RECORD));
+        doNothing().when(projectRepository).updateData(eq(EXISTING_USERNAME), eq(EXISTING_PROJECT_NAME), any(ProjectRecord.class));
         projectService.deleteTask(EXISTING_USERNAME, EXISTING_PROJECT_NAME, existingTaskName);
-        List<Task> tasks = EXISTING_PROJECT.getTasks();
-        int result = tasks.size();
         //THEN
-        assertEquals(expected, result, "Expected removal of existing task to remove task.");
+        verify(projectRepository).updateData(eq(EXISTING_USERNAME), eq(EXISTING_PROJECT_NAME), any(ProjectRecord.class));
     }
     @Test
     public void deleteTask_notExistingTask_noChangeToListOfUserProjects() {
@@ -175,8 +177,8 @@ public class ProjectRecordServiceTest {
         int expected = EXISTING_PROJECT.getTasks().size();
 
         //WHEN
-        when(projectRepository.loadProjectByProjectName(EXISTING_USERNAME, EXISTING_PROJECT_NAME)).thenReturn(Arrays.asList(EXISTING_PROJECT));
-        doNothing().when(projectRepository).updateData(EXISTING_USERNAME, EXISTING_PROJECT_NAME, EXISTING_PROJECT);
+        when(projectRepository.loadProjectByProjectName(EXISTING_USERNAME, EXISTING_PROJECT_NAME)).thenReturn(Arrays.asList(EXISTING_PROJECT_RECORD));
+        doNothing().when(projectRepository).updateData(eq(EXISTING_USERNAME), eq(EXISTING_PROJECT_NAME), any(ProjectRecord.class));
         projectService.deleteTask(EXISTING_USERNAME, EXISTING_PROJECT_NAME, UUID.randomUUID().toString());
         List<Task> tasks = EXISTING_PROJECT.getTasks();
         int result = tasks.size();
@@ -190,97 +192,96 @@ public class ProjectRecordServiceTest {
         String existingTaskNotes = "Test Notes";
         String changedName = "Changed name";
         String projectName = EXISTING_PROJECT_NAME;
-        Task task = new Task();
-        task.setTaskName(existingTaskName);
-        task.setNotes(existingTaskNotes);
-        EXISTING_PROJECT.getTasks().add(task);
+        TaskRecord taskRecord = new TaskRecord();
+        taskRecord.setTaskName(existingTaskName);
+        taskRecord.setNotes(existingTaskNotes);
+        EXISTING_PROJECT_RECORD.getTaskRecords().add(taskRecord);
         //WHEN
-        when(projectRepository.loadProjectByProjectName(EXISTING_USERNAME, projectName)).thenReturn(Arrays.asList(EXISTING_PROJECT));
+        when(projectRepository.loadProjectByProjectName(EXISTING_USERNAME, projectName)).thenReturn(Arrays.asList(EXISTING_PROJECT_RECORD));
         projectService.editTaskName(EXISTING_USERNAME, EXISTING_PROJECT_NAME, existingTaskName, changedName);
         //THEN
-        verify(projectRepository).updateData(EXISTING_USERNAME, EXISTING_PROJECT_NAME, EXISTING_PROJECT);
+        verify(projectRepository).updateData(eq(EXISTING_USERNAME), eq(EXISTING_PROJECT_NAME), any(ProjectRecord.class));
     }
     @Test
     public void editTaskName_nonexistentTask_noChange() {
         //GIVEN
         String changedName = "Changed Name";
         //WHEN
-        when(projectRepository.loadProjectByProjectName(EXISTING_USERNAME, EXISTING_PROJECT_NAME)).thenReturn(Arrays.asList(EXISTING_PROJECT));
+        when(projectRepository.loadProjectByProjectName(EXISTING_USERNAME, EXISTING_PROJECT_NAME)).thenReturn(Arrays.asList(EXISTING_PROJECT_RECORD));
         projectService.editTaskName(EXISTING_USERNAME, EXISTING_PROJECT_NAME, UUID.randomUUID().toString(), changedName);
         //THEN
-        verify(projectRepository, times(0)).updateData(EXISTING_USERNAME, EXISTING_PROJECT_NAME, EXISTING_PROJECT);
+        verify(projectRepository, times(0)).updateData(eq(EXISTING_USERNAME), eq(EXISTING_PROJECT_NAME), any(ProjectRecord.class));
     }
     @Test
     public void markTaskAsComplete_taskMarkedAsCompleteAndCompletionStatusCorrect() {
         //GIVEN
         String existingTaskName = "Test Task";
-        Task task = new Task();
-        task.setTaskName(existingTaskName);
-        EXISTING_PROJECT.getTasks().add(task);
+        TaskRecord taskRecord = new TaskRecord();
+        taskRecord.setTaskName(existingTaskName);
+        EXISTING_PROJECT_RECORD.getTaskRecords().add(taskRecord);
         //WHEN
-        when(projectRepository.loadProjectByProjectName(EXISTING_USERNAME, EXISTING_PROJECT_NAME)).thenReturn(Arrays.asList(EXISTING_PROJECT));
-        doNothing().when(projectRepository).updateData(EXISTING_USERNAME, EXISTING_PROJECT_NAME, EXISTING_PROJECT);
+        when(projectRepository.loadProjectByProjectName(EXISTING_USERNAME, EXISTING_PROJECT_NAME)).thenReturn(Arrays.asList(EXISTING_PROJECT_RECORD));
+        doNothing().when(projectRepository).updateData(eq(EXISTING_USERNAME), eq(EXISTING_PROJECT_NAME), any(ProjectRecord.class));
         projectService.markTaskAsComplete(EXISTING_USERNAME, EXISTING_PROJECT_NAME, existingTaskName);
-        boolean result = task.getCompletionStatus();
         //THEN
-        assertTrue(result, "Expected completion status to be true after marking task complete");
+        verify(projectRepository).updateData(eq(EXISTING_USERNAME), eq(EXISTING_PROJECT_NAME), any(ProjectRecord.class));
     }
     @Test
     public void startTaskTime_noNonClosedOutTimeLogs_createsNewTimelog() {
         //GIVEN
         String existingTaskName = "Test Task";
-        Task task = new Task();
-        task.setTaskName(existingTaskName);
-        EXISTING_PROJECT.getTasks().add(task);
+        TaskRecord taskRecord = new TaskRecord();
+        taskRecord.setTaskName(existingTaskName);
+        EXISTING_PROJECT_RECORD.getTaskRecords().add(taskRecord);
         //WHEN
-        when(projectRepository.loadProjectByProjectName(EXISTING_USERNAME, EXISTING_PROJECT_NAME)).thenReturn(Arrays.asList(EXISTING_PROJECT));
+        when(projectRepository.loadProjectByProjectName(EXISTING_USERNAME, EXISTING_PROJECT_NAME)).thenReturn(Arrays.asList(EXISTING_PROJECT_RECORD));
         projectService.startTaskTime(EXISTING_USERNAME, EXISTING_PROJECT_NAME, existingTaskName);
         //THEN
-        verify(projectRepository).updateData(EXISTING_USERNAME, EXISTING_PROJECT_NAME, EXISTING_PROJECT);
+        verify(projectRepository).updateData(eq(EXISTING_USERNAME), eq(EXISTING_PROJECT_NAME), any(ProjectRecord.class));
     }
     @Test
     public void startTaskTime_nonClosedOutTimeLogs_noNewTimeLogCreated() {
         //GIVEN
         String existingTaskName = "Test Task";
-        Task task = new Task();
-        task.setTaskName(existingTaskName);
+        TaskRecord taskRecord = new TaskRecord();
+        taskRecord.setTaskName(existingTaskName);
         TimeLog timeLog = new TimeLog();
         timeLog.start();
-        task.getTimeLogs().add(timeLog);
-        EXISTING_PROJECT.getTasks().add(task);
+        taskRecord.getTimeLogRecords().add(TimeLogRecord.builder().startDateTime(timeLog.getStartDateTime()).endDateTime(timeLog.getEndDateTime()).build());
+        EXISTING_PROJECT_RECORD.getTaskRecords().add(taskRecord);
         //WHEN
-        when(projectRepository.loadProjectByProjectName(EXISTING_USERNAME, EXISTING_PROJECT_NAME)).thenReturn(Arrays.asList(EXISTING_PROJECT));
+        when(projectRepository.loadProjectByProjectName(EXISTING_USERNAME, EXISTING_PROJECT_NAME)).thenReturn(Arrays.asList(EXISTING_PROJECT_RECORD));
         projectService.startTaskTime(EXISTING_USERNAME, EXISTING_PROJECT_NAME, existingTaskName);
         //THEN
-        verify(projectRepository, times(0)).updateData(EXISTING_USERNAME, EXISTING_PROJECT_NAME, EXISTING_PROJECT);
+        verify(projectRepository, times(0)).updateData(eq(EXISTING_USERNAME), eq(EXISTING_PROJECT_NAME), any(ProjectRecord.class));
     }
     @Test
     public void endTaskTime_recentLogStartTimeExistsEndTimeNull_createsNewEndTime() {
         //GIVEN
         String existingTaskName = "Test Task";
-        Task task = new Task();
-        task.setTaskName(existingTaskName);
+        TaskRecord taskRecord = new TaskRecord();
+        taskRecord.setTaskName(existingTaskName);
         TimeLog timeLog = new TimeLog();
         timeLog.start();
-        task.getTimeLogs().add(timeLog);
-        EXISTING_PROJECT.getTasks().add(task);
+        taskRecord.getTimeLogRecords().add(TimeLogRecord.builder().startDateTime(timeLog.getStartDateTime()).endDateTime(timeLog.getEndDateTime()).build());
+        EXISTING_PROJECT_RECORD.getTaskRecords().add(taskRecord);
         //WHEN
-        when(projectRepository.loadProjectByProjectName(EXISTING_USERNAME, EXISTING_PROJECT_NAME)).thenReturn(Arrays.asList(EXISTING_PROJECT));
+        when(projectRepository.loadProjectByProjectName(EXISTING_USERNAME, EXISTING_PROJECT_NAME)).thenReturn(Arrays.asList(EXISTING_PROJECT_RECORD));
         projectService.endTaskTime(EXISTING_USERNAME, EXISTING_PROJECT_NAME, existingTaskName);
         //THEN
-        verify(projectRepository).updateData(EXISTING_USERNAME, EXISTING_PROJECT_NAME, EXISTING_PROJECT);
+        verify(projectRepository).updateData(eq(EXISTING_USERNAME), eq(EXISTING_PROJECT_NAME), any(ProjectRecord.class));
     }
     @Test
     public void endTaskTime_noRecentLog_noEndTimeCreated() {
         //GIVEN
         String existingTaskName = "Test Task";
-        Task task = new Task();
-        task.setTaskName(existingTaskName);
-        EXISTING_PROJECT.getTasks().add(task);
+        TaskRecord taskRecord = new TaskRecord();
+        taskRecord.setTaskName(existingTaskName);
+        EXISTING_PROJECT_RECORD.getTaskRecords().add(taskRecord);
         //WHEN
-        when(projectRepository.loadProjectByProjectName(EXISTING_USERNAME, EXISTING_PROJECT_NAME)).thenReturn(Arrays.asList(EXISTING_PROJECT));
+        when(projectRepository.loadProjectByProjectName(EXISTING_USERNAME, EXISTING_PROJECT_NAME)).thenReturn(Arrays.asList(EXISTING_PROJECT_RECORD));
         projectService.endTaskTime(EXISTING_USERNAME, EXISTING_PROJECT_NAME, existingTaskName);
         //THEN
-        verify(projectRepository, times(0)).updateData(EXISTING_USERNAME, EXISTING_PROJECT_NAME, EXISTING_PROJECT);
+        verify(projectRepository, times(0)).updateData(eq(EXISTING_USERNAME), eq(EXISTING_PROJECT_NAME), any(ProjectRecord.class));
     }
 }

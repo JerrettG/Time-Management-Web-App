@@ -37,4 +37,11 @@ public class TaskRecord {
         this.completionStatus = false;
     }
 
+    public boolean getCompletionStatus() {
+        return this.completionStatus;
+    }
+    public void setCompletionStatus(boolean completionStatus) {
+        this.completionStatus = completionStatus;
+    }
+
 }
