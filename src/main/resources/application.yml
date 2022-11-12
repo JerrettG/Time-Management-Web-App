@@ -1,16 +1,15 @@
 server:
   port: 5000
-
-
-
 spring:
   security:
     oauth2:
       client:
         registration:
           auth0:
-            client-id: ${TIMELY_AUTH_CLIENT_ID}
-            client-secret: ${TIMELY_AUTH_CLIENT_SECRET}
+            client-id: p3spvRimuASb30XeVVGPORwYDZeZtgD3
+
+            client-secret: FB00FYsKwYXlnyrwkZidvowVuJL2DbGlohZ9OV_POyVrSSm83ShPZO3PFRuOIhOF
+
             scope:
               - openid
               - profile
@@ -18,4 +17,4 @@ spring:
         provider:
           auth0:
             # trailing slash is important!
-            issuer-uri: ${AUTH_ISSUER_URI}
+            issuer-uri: https://dev-cd4uq5z8.us.auth0.com/

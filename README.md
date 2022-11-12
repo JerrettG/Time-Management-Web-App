@@ -1,5 +1,5 @@
 # Time-Management-Web-App
-Java | Spring Boot | Auth0 | Thymeleaf | DynamoDB | CSS <br /><br />
+Java | Spring Boot | Auth0 | Thymeleaf | DynamoDB | CSS | DOCKER <br /><br />
 Project-time management system utilizing an MVC design with the primary function to help clients
 get more accurate data about how long it takes for them to finish projects of certain sizes.
 Useful for SCRUM teams to keep track of sprint progress and useful for schools to
@@ -17,6 +17,10 @@ Additional Features to be implemented:
 - [x] Email service for email link verification for registration and reset username/password function
 - [ ] Project collaboration with other users
 
+## NOTE:
+The deployed version of this website has been taken down temporarily. When the site is ready to be hosted again, the project
+will be deployed and reachable at https://thetimelyproject.com
+
 ## Product Demo:
 
 ### Login
@@ -28,20 +32,21 @@ Additional Features to be implemented:
 ### Create a Project
 ![Create a project screen](src/main/resources/static/images/createProject.png)
 
-### Project specific view - click on taskRecord name to get to taskRecord view!
+### Project specific view - click on task name to get to task view!
 ![Project view](src/main/resources/static/images/projectView.png)
 
+### Edit a project name
+![Edit task name](src/main/resources/static/images/editProjectName.png)
+
+
 ### Task view
-![Task view](src/main/resources/static/images/taskStartedView.png)
+![Task view](src/main/resources/static/images/taskView.png)
 
 ### Task Started View
 ![Task started view](src/main/resources/static/images/taskStartedView.png)
 
-### Edit taskRecord name
-![Edit taskRecord name](src/main/resources/static/images/editTaskName.png)
+### Create a new task
+![Create a task screen](src/main/resources/static/images/createTask.png)
 
-### Create a new taskRecord
-![Create a taskRecord screen](src/main/resources/static/images/createTask.png)
-
-### Marked a taskRecord as completed
-![Project view with taskRecord marked as complete](src/main/resources/static/images/taskMarkedComplete.png)
+### Marked a task as completed
+![Project view with task marked as complete](src/main/resources/static/images/taskMarkedComplete.png)

@@ -8,5 +8,6 @@ public class TimeManagementSystemApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(TimeManagementSystemApplication.class, args);
+		
 	}
 }

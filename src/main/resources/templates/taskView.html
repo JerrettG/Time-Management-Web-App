@@ -35,8 +35,8 @@
         <form id="delete-task-form" class="button_links" th:action="@{|/projects/${projectName}/task/${taskName}/delete|}"></form>
 
         <form th:action="@{|/projects/${projectName}/task/${task.getTaskName()}/editTaskName|}" th:method="post" class="edit-form">
-            <input class="form_input" placeholder="Updated project name" th:name="updatedTaskName">
-            <button class="buttons submit_button" type="submit">Save</button>R
+            <input class="form_input" placeholder="Updated task name" th:name="updatedTaskName">
+            <button class="buttons submit_button" type="submit">Save</button>
             <button class="buttons reset_cancel_button" type="button" onclick="document.querySelector('.edit-form').style.display = 'none'">Cancel</button>
         </form>
         <div class="task-buttons">
