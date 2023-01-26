@@ -1,0 +1,252 @@
+
+:root {
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+    --primary-color: white;
+    --secondary-color: black;
+    --secondary-color-rgb: 0,0,0;
+    --link-color: #4f4f4f;
+    --link-hover-color: #3461b2;
+    --nav-color: #ababab;
+    --delete-color: indianred;
+    --delete-color-rgb: 205,92,92;
+}
+
+* {
+    font-family: 'Poppins', sans-serif;
+    text-decoration: none;
+    margin: 0;
+}
+
+a {
+    text-decoration: none;
+    color: var(--link-color);
+    transition: all .3s ease;
+}
+
+a:hover {
+    color: var(--link-hover-color);
+}
+
+body {
+    height: 100vh;
+}
+.task-taskName {
+    border: solid thin white;
+    transition: all .2s ease;
+}
+.task-taskName:hover {
+    border-color: gray;
+    cursor: text;
+}
+
+button:hover {
+    cursor: pointer;
+}
+
+.navbar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    background-color: var(--nav-color);
+}
+
+.logo-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 1em;
+}
+
+.logo {
+    color: white;
+    font-size: x-large;
+}
+
+.nav-links-container {
+    display: flex;
+    align-items: center;
+}
+
+.nav-links {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.nav-link {
+    border-radius: 8px;
+    padding: 1em;
+    list-style: none;
+    transition: all 0.2s ease-out;
+}
+
+.nav-link a {
+    color: white;
+    background: none;
+    transition: all 0.2s ease-out;
+}
+.nav-link:hover {
+    background-color: white;
+    cursor: pointer
+}
+.nav-link:hover > a {
+    color: var(--nav-color);
+}
+
+.loading-spinner  {
+    display: inline-block;
+    height: 100%;
+    aspect-ratio: 1/1;
+    border: 3px solid rgba(255, 255, 255, .3);
+    border-radius: 50%;
+    border-top-color: black;
+    animation: spin .75s ease-in-out infinite;
+    -webkit-animation: spin .75s ease-in-out infinite;
+}
+@keyframes spin {
+    to {
+        -webkit-transform: rotate(360deg);
+    }
+}
+@-webkit-keyframes spin {
+    to {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+.row-group-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 1em 0;
+}
+
+.filters {
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+    column-gap: 0.5em;
+    width: 100%;
+}
+
+#create-btn {
+    min-width: 150px;
+    padding: .5em 1em;
+    border-radius: 5px;
+    transition: all 0.2s ease
+}
+
+#create-btn:hover {
+    background-color: rgb(var(--secondary-color-rgb), 50%);
+}
+
+.projects-display-container, .popups-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.display {
+    padding: 2em;
+}
+
+.display-table {
+    width: 55em;
+    border: solid thin black;
+    border-radius: 5px;
+    box-shadow: 0 0 4px 1px rgb(0 0 0 / 25%);
+}
+
+.display-table tbody tr td {
+    padding: 1em;
+    text-align: center;
+}
+
+.progress-bar {
+    width: 75px;
+}
+
+.create-form-container, .confirmation-delete-container {
+    border: solid thin gray;
+    border-radius: 5px;
+    background: white;
+}
+
+.create-form, .confirmation-delete {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    row-gap: 1em;
+    padding: 2em;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.25em;
+}
+
+.form-group input, .form-group textarea {
+    width: 100%;
+    border-radius: 5px;
+    border: solid thin gray;
+    padding: 0.5em;
+    font-size: 1em;
+}
+
+
+.popup {
+    display: none;
+    position: absolute;
+    top: 10em;
+    z-index: 10;
+}
+
+.popup-screen {
+    display: none;
+    z-index: 7;
+    position: fixed;
+    background: rgba(255,255,255, 0.1);
+    -webkit-filter: blur(2px);
+    backdrop-filter: blur(2px);
+    width: 100%;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+}
+
+.close-popup-btn {
+    float: right;
+    margin: 1em 1em 0 0;
+}
+
+.delete-btn {
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+.confirmation-delete .delete-btn {
+    color: white;
+    background: var(--delete-color);
+    border: none;
+    padding: 1em;
+}
+
+.confirmation-delete .delete-btn:enabled:hover {
+    background: rgba(var(--delete-color-rgb), 75%);
+}
+.confirmation-delete .delete-btn:disabled {
+    background: #a94b4b;
+    color: lightgrey;
+}
+
+.btns-container {
+    flex-direction: row;
+    justify-content: flex-end;
+    column-gap: 1em;
+}
+
+

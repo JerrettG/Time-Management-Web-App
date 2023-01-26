@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      xmlns:visibility="http://www.w3.org/1999/xhtml" lang="en">
+<link th:href="@{/css/styles.css}" rel="stylesheet" />
+<head>
+    <title th:object="${projectName}"  th:text="${task.getTaskName()}"></title>
+    <script src="https://cdn.tiny.cloud/1/e08x53wvefug99yh23abdil6lncenjbu0xxr8cvlks2o1gby/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+
+    <script>
+        tinymce.init({
+            selector: '#mytextarea'
+        });
+    </script>
+    <script src="https://kit.fontawesome.com/56465f43f1.js" crossorigin="anonymous"></script>
+</head>
+<body>
+<th:b th:replace="fragments :: navbar"></th:b>
+<!---- Specific task view --->
+<section>
+    <div class="popup-screen"></div>
+    <div class="confirmation-dialogue">
+        <p>Are you sure you want to delete this? This action cannot be undone!</p>
+        <div class="confirmation-dialogue-buttons">
+            <button class="buttons delete-button" type="submit" form="delete-task-form">DELETE ANYWAY</button>
+            <button class="buttons keep-button" type="button" onclick="document.querySelector('.popup-screen').style.display = 'none';document.querySelector('.confirmation-dialogue').style.display='none';">KEEP</button>
+        </div>
+    </div>
+    <div class="project_task_display">
+        <div class="task-name">
+            <h1 th:text="${status} ? ${task.getTaskName()} + ' - in progress' : ${task.getTaskName()}"/><span class="edit-icon"><i class="fa-solid fa-pen-to-square" style="font-size: 15px;color:gray;cursor:pointer;" onclick="document.querySelector('.edit-form').style.display = 'block'"></i></span>
+            <span class="delete-icon"><i class="fa-solid fa-trash" style="color:indianred;cursor:pointer;" onclick="document.querySelector('.confirmation-dialogue').style.display='block';document.querySelector('.popup-screen').style.display='flex';"></i></span>
+        </div>
+
+        <form id="delete-task-form" class="button_links" th:action="@{|/projects/${projectName}/task/${taskName}/delete|}"></form>
+
+        <form th:action="@{|/projects/${projectName}/task/${task.getTaskName()}/editTaskName|}" th:method="post" class="edit-form">
+            <input class="form_input" placeholder="Updated task name" th:name="updatedTaskName">
+            <button class="buttons submit_button" type="submit">Save</button>
+            <button class="buttons reset_cancel_button" type="button" onclick="document.querySelector('.edit-form').style.display = 'none'">Cancel</button>
+        </form>
+        <div class="task-buttons">
+            <a class="button_links" th:href="@{|/projects/${projectName}/task/${task.getTaskName()}/markAsComplete|}"><button class="buttons" id="mark_task_complete_button">Mark task as Complete</button></a>
+            <a class="button_links" th:href="@{|/projects/${projectName}/task/${task.getTaskName()}/startTaskTime|}"><button class="buttons" id="start_task_button">Start working on task</button></a>
+            <a class="button_links" th:href="@{|/projects/${projectName}/task/${task.getTaskName()}/endTaskTime|}"><button class="buttons" id="stop_task_button">Stop working on task</button></a>
+        </div>
+        <span th:text="|Time spent on task: ${task.getTimeSpentOnTask()}|"></span>
+        <h3>Notes</h3>
+        <form th:method="post" th:action="@{|/projects/${projectName}/${taskName}/richTextEditor|}" id="notes_form">
+            <textarea id="mytextarea" name="notes" form="notes_form" th:text="${task.getNotes()}"></textarea>
+            <button class="buttons submit_button" type="submit">Submit</button>
+        </form>
+    </div>
+</section>
+</body>
+
+</html>

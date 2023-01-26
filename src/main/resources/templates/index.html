@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Projects - Timely</title>
+    <link rel="stylesheet" th:href="@{/css/index.bundle.css}"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://kit.fontawesome.com/829e5d7ffb.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.tiny.cloud/1/e08x53wvefug99yh23abdil6lncenjbu0xxr8cvlks2o1gby/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+</head>
+<body>
+<header><th:block th:replace="fragments :: navbar"></th:block></header>
+<!--------- Projects List ------->
+<div class="projects-display-container">
+    <div class="popup-screen"></div>
+    <div class="display">
+        <div class="row-group-container">
+            <div class="filters">
+                Sort by:
+                <select class="sort-select" id="sortBy-category">
+                    <option data-sortBy="projectName">Project name</option>
+                    <option data-sortBy="completionPercent">Completion %</option>
+                    <option data-sortBy="totalTimeSpent">Time Spent</option>
+                    <option data-sortBy="creationDate">Created</option>
+                </select>
+                <select class="sort-select" id="sortBy-order">
+                    <option data-sortBy="asc">Ascending</option>
+                    <option data-sortBy="desc">Descending</option>
+                </select>
+                <button type="button" id="apply-sort-btn">Apply</button>
+                <button type="button" id="clear-sort-btn">Clear</button>
+            </div>
+            <div>
+                <button type="button" id="create-btn" data-popup=".create-form-container">Create a project</button>
+            </div>
+        </div>
+        <table class="display-table">
+            <thead>
+                <tr>
+                    <th>Project name:</th>
+                    <th>Completion %:</th>
+                    <th>Time spent:</th>
+                    <th>Created:</th>
+                </tr>
+            </thead>
+            <tbody id="display-table-data">
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="popups-container"></div>
+<script th:inline="javascript">
+    const userId = /*[[${userId}]]*/ '';
+</script>
+<script type="module" defer th:src="@{/js/index.bundle.js}"></script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!--------- Navigation --------->
+<th:block th:fragment="navbar">
+    <nav class="navbar">
+        <div class="logo-container">
+            <a th:href="@{/}" class="logo">Timely <i class="fa-solid fa-clock"></i></a>
+        </div>
+        <div class="nav-links-container">
+            <ul class="nav-links">
+                <li class="nav-link"><a th:href="@{/}">Product</a></li>
+                <li class="nav-link"><a th:href="@{/dashboard}">Projects</a></li>
+                <li class="nav-link" sec:authorize="!isAuthenticated()"><a th:href="@{/oauth2/authorization/auth0}">Login</a></li>
+                <li class="nav-link" sec:authorize="isAuthenticated()"><a th:href="@{/logout}">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+</th:block>
+</body>
+</html>

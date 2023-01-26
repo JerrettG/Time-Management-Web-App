@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3" lang="en">
+<link th:href="@{/css/style.css}" rel="stylesheet"/>
+<link  th:href="@{/images/}" th:rel="images">
+<head>
+    <meta charset="UTF-8">
+    <title>Product Overview - Timely</title>
+</head>
+<header></header>
+
+<body>
+<th:b th:replace="fragments :: navbar"></th:b>
+
+<section th:fragment="productOverview">
+    <div class="product_overview">
+        <h2>Overview</h2>
+        <p><strong>Timely</strong> is a time management application that allows you to create, manage, organize, and track the progress of your projects.
+            Get started by simply creating a project and specify your tasks. When you're ready to start working on a task, navigate to the task
+            you're working on and click <em>Start</em>. Done working for the day or simply taking a break? No problem! Click <em>Pause</em> in your
+            task view to punch your time card.
+        </p>
+        <h2>How to:</h2>
+        <h3>Create a project</h3>
+        <p>To create a project, click on the create a project button on the Projects page
+            and enter the project nane, your first task name, and notes for that task</p>
+        <img th:src="@{/images/createProject.png}" alt="Create a project view">
+        <p></p>
+        <h3>View more info about your project</h3>
+        <p>After you have created a project, you will see your project show up on your Projects page.
+            to gain more info, click on the name of the project, and you will be taken to a page showing you your list of tasks
+            for the project, which tasks are completed, the percentage of your project that's completed, as well as other tools
+            to manage the project such as editing the project name.</p>
+        <img th:src="@{/images/projects.png}" alt="Project overview page">
+        <p></p>
+        <h3>Create additional tasks</h3>
+        <p>You can create additional tasks for your project to manage by clicking on the 'Add Task' button on your project overview page.
+            This will take you to a screen allowing you to enter info regarding the new task name and notes for the new task.</p>
+        <img th:src="@{/images/createTask.png}" alt="Create a task view">
+        <p></p>
+        <h3>View more info about your tasks</h3>
+        <p>Similarly with getting more info about your project, you can click on the name of the task you want more info about
+            on your project overview page, and you will be taken to a task overview page where you wil see your notes and tools
+            to manage your task. You can even edit your task name and mark it as complete! If you mark your task as complete,
+            you will see the change reflected on your project overview page</p>
+        <img th:src="@{/images/taskView.png}" alt="Task overview page">
+        <img th:src="@{/images/taskMarkedComplete.png}" alt="Project overview page with a task marked as complete">
+        <p></p>
+        <h3>Starting a task</h3>
+        <p>Starting a task will begin keeping track of your time working on the task. When you're done working on the task
+            for the day, just click 'Stop working on task' button and your time spent on task will update. NOTE, it is important to make
+            sure to end your task. If you haven't been working on the task for at least a minute, your task time will not update</p>
+        <img th:src="@{/images/taskStartedView.png}" alt="Task started view">
+        <p></p>
+    </div>
+</section>
+</body>
+</html>
