@@ -65,23 +65,14 @@ public class ProjectController {
     //NOTE: projectName cannot be updated as it is a key value
     @PutMapping
     public ResponseEntity<ProjectResponse> updateProject(
-            @RequestParam(value = "editName", defaultValue = "false")boolean editName,
             @RequestBody ProjectUpdateRequest request) {
         Project project = Project.builder()
                 .userId(request.getUserId())
                 .projectName(request.getProjectName())
-                .totalTimeSpent(request.getTotalTimeSpent())
-                .completionPercent(request.getCompletionPercent())
+                .projectId(String.format("%s_%s", request.getUserId(), request.getProjectName()))
                 .build();
         try {
-            if (editName) {
-                Project existingProject = projectService.getProjectByProjectName(request.getUserId(), request.getProjectName());
-                projectService.deleteProject(existingProject);
-                project.setProjectName(request.getUpdatedProjectName());
-                projectService.createProject(project);
-            } else {
-                projectService.updateProject(project);
-            }
+            projectService.updateProject(project);
             return ResponseEntity.accepted().build();
         } catch (ProjectNotFoundException e) {
             return ResponseEntity.notFound().build();

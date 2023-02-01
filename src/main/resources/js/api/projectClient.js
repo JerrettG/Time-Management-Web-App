@@ -76,14 +76,12 @@ export default class ProjectClient extends BaseClass {
         }
     }
 
-    async updateProject(userId, projectName, totalTimeSpent, completionPercent, errorCallback) {
+    async updateProject(userId, projectName, errorCallback) {
         try {
             const response = await this.client.put(`/api/v1/project`,
                 {
                     userId: userId,
                     projectName: projectName,
-                    totalTimeSpent: totalTimeSpent,
-                    completionPercent: completionPercent
                 }
             )
             return response.data;

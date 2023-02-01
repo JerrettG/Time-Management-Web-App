@@ -26,7 +26,6 @@ import java.util.List;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @Import({DynamoDBTestConfiguration.class, DynamoDBMapperTestConfiguration.class, WebSecurityTestConfig.class})
 @IntegrationTest
 public class TaskControllerTest {

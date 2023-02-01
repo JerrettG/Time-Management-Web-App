@@ -71,8 +71,6 @@ public class TaskController {
                 .projectId(request.getProjectId())
                 .taskName(request.getTaskName())
                 .notes(request.getNotes())
-                .timeSpent(request.getTimeSpent())
-                .timeLogs(request.getTimeLogs())
                 .status(request.getStatus())
                 .build();
         try {

@@ -1,5 +1,7 @@
 package com.gonsalves.timely.service;
 
+import com.amazonaws.Response;
+import com.gonsalves.timely.controller.model.TaskResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,14 +30,17 @@ public class TaskServiceClient {
             .build();
     }
 
-    public ResponseEntity<String> deleteAllTasksForProject(String projectId) {
+    public List<Task> getAllTasksForProject(String projectId) {
+        ResponseEntity<Task[]> response = restTemplate.getForEntity(String.format("/api/v1/task/all?projectId=%s", projectId), Task[].class);
+        return Arrays.asList(response.getBody());
+    }
+
+    public void deleteAllTasksForProject(String projectId) {
         ResponseEntity<Task[]> response = restTemplate.getForEntity(String.format("/api/v1/task/all?projectId=%s", projectId), Task[].class);
         List<Task> tasks = Arrays.asList(response.getBody());
 
         tasks.forEach(task -> restTemplate.delete(
                         "/api/v1/task?projectId={projectId}&taskName={taskName}", projectId, task.getTaskName()));
-
-        return ResponseEntity.ok().build();
     }
 
 
@@ -46,6 +51,9 @@ public class TaskServiceClient {
     public static class Task {
         private String projectId;
         private String taskName;
+        private String notes;
+        private String timeSpent;
+        private String status;
     }
 
 }

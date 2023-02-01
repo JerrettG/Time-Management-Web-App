@@ -21,6 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -86,7 +87,7 @@ public class TaskServiceTest {
                 status
         );
 
-        when(taskRepository.getTaskByTaskName(projectId, taskName)).thenReturn(entity);
+        when(taskRepository.getTaskByTaskName(projectId, taskName)).thenReturn(Optional.ofNullable(entity));
 
         Task result = taskService.getTaskByTaskName(projectId, taskName);
 
@@ -140,7 +141,7 @@ public class TaskServiceTest {
         task.setNotes(notes);
         task.setStatus(status);
 
-        when(taskRepository.getTaskByTaskName(projectId, taskName)).thenReturn(new TaskEntity());
+        when(taskRepository.getTaskByTaskName(projectId, taskName)).thenReturn(Optional.ofNullable(new TaskEntity()));
         doNothing().when(taskRepository).createTask(any(TaskEntity.class));
 
         assertThrows(TaskAlreadyExistsException.class, () -> taskService.createTask(task));
@@ -197,7 +198,7 @@ public class TaskServiceTest {
         task.setProjectId(projectId);
         task.setTaskName(taskName);
 
-        when(taskRepository.getTaskByTaskName(projectId, taskName)).thenReturn(new TaskEntity());
+        when(taskRepository.getTaskByTaskName(projectId, taskName)).thenReturn(Optional.ofNullable(new TaskEntity()));
 
         taskService.deleteTask(task);
 

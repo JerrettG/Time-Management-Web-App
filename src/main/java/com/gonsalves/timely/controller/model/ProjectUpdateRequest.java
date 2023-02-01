@@ -11,7 +11,4 @@ public class ProjectUpdateRequest {
 
     private String userId;
     private String projectName;
-    private String updatedProjectName;
-    private String totalTimeSpent;
-    private Integer completionPercent;
 }

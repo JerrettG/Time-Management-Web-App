@@ -17,9 +17,7 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,9 +46,10 @@ public class TaskService {
                 .ifPresent(existingTask -> {
                     throw new TaskAlreadyExistsException();
                 });
-
-        task.setTimeLogs(new ArrayList<>());
-        task.setTimeSpent("00:00:00");
+        if (task.getTimeLogs() == null) {
+            task.setTimeLogs(new ArrayList<>());
+            task.setTimeSpent("00:00:00");
+        }
         TaskEntity entity = convertToEntity(task);
         taskRepository.createTask(entity);
 
@@ -58,7 +57,8 @@ public class TaskService {
     }
 
     public void updateTask(Task task) {
-        task.calculateAndUpdateTimeSpent();
+        if (task.getTimeLogs() != null)
+            task.calculateAndUpdateTimeSpent();
         TaskEntity entity = convertToEntity(task);
         try {
             taskRepository.updateTask(entity);
@@ -98,7 +98,7 @@ public class TaskService {
     private TaskEntity convertToEntity(Task task) {
         return new TaskEntity(
                 task.getProjectId(),
-                task.getTaskName(),
+                task.getTaskName().strip(),
                 task.getNotes(),
                 task.getTimeSpent(),
                 convertToEntity(task.getTimeLogs()),
@@ -107,7 +107,7 @@ public class TaskService {
     }
 
     private List<TimeLogEntity> convertToEntity(List<TimeLog> timeLogs) {
-        return timeLogs.stream()
+        return Objects.isNull(timeLogs) ? null : timeLogs.stream()
                 .map(timeLog -> new TimeLogEntity(timeLog.getStartDateTime(), timeLog.getEndDateTime()))
                 .collect(Collectors.toList());
     }
@@ -124,7 +124,7 @@ public class TaskService {
     }
 
     private List<TimeLog> convertFromEntity(List<TimeLogEntity> timeLogEntities) {
-        return timeLogEntities.stream()
+        return Objects.isNull(timeLogEntities) ? null : timeLogEntities.stream()
                 .map(entity -> new TimeLog(entity.getStartDateTime(), entity.getEndDateTime()))
                 .collect(Collectors.toList());
     }

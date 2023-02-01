@@ -22,12 +22,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-@Import({DynamoDBTestConfiguration.class, DynamoDBMapperTestConfiguration.class, WebSecurityTestConfig.class})
+@Import({DynamoDBTestConfiguration.class, WebSecurityTestConfig.class})
 @IntegrationTest
 public class ProjectControllerTest {
 
@@ -63,11 +61,36 @@ public class ProjectControllerTest {
         } catch (AmazonDynamoDBException e) {
             System.out.println(e.getMessage());
         }
+
+        attributeDefinitions= new ArrayList<AttributeDefinition>();
+        attributeDefinitions.add(new AttributeDefinition().withAttributeName("project_id").withAttributeType("S"));
+        attributeDefinitions.add(new AttributeDefinition().withAttributeName("task_name").withAttributeType("S"));
+
+        keySchema = Arrays.asList(
+                new KeySchemaElement().withAttributeName("project_id").withKeyType(KeyType.HASH),
+                new KeySchemaElement().withAttributeName("task_name").withKeyType(KeyType.RANGE));
+
+        request = new CreateTableRequest()
+                .withTableName("Timely-Tasks")
+                .withKeySchema(keySchema)
+                .withAttributeDefinitions(attributeDefinitions)
+                .withProvisionedThroughput(new ProvisionedThroughput()
+                        .withReadCapacityUnits(5L)
+                        .withWriteCapacityUnits(6L));
+        try {
+            CreateTableResult response = amazonDynamoDB.createTable(request);
+        } catch (AmazonDynamoDBException e) {
+            System.out.println(e.getMessage());
+        }
     }
     @AfterEach
     public void cleanUp(){
         DeleteTableRequest request = new DeleteTableRequest();
         request.setTableName("Timely-Projects");
+
+        amazonDynamoDB.deleteTable(request);
+        request = new DeleteTableRequest();
+        request.setTableName("Timely-Tasks");
 
         amazonDynamoDB.deleteTable(request);
     }
@@ -178,17 +201,13 @@ public class ProjectControllerTest {
                 .andReturn().getResponse().getContentAsString();
         ProjectResponse createResponse = mapper.readValue(jsonResponse, ProjectResponse.class);
 
-        Integer updatedCompletionPercent = mockNeat.ints().range(0, 100).val();
         ProjectUpdateRequest updateRequest = new ProjectUpdateRequest(
                 createResponse.getUserId(),
-                createRequest.getProjectName(),
-                null,
-                createResponse.getTotalTimeSpent(),
-                updatedCompletionPercent
+                createRequest.getProjectName()
         );
 
         //WHEN
-        utility.projectClient.updateProject(updateRequest, false)
+        utility.projectClient.updateProject(updateRequest)
                 //THEN
                 .andExpect(status().isAccepted());
         utility.projectClient.getProjectByProjectName(createResponse.getUserId(), createResponse.getProjectName())
@@ -197,7 +216,7 @@ public class ProjectControllerTest {
                         jsonPath("userId").value(createResponse.getUserId()),
                         jsonPath("projectName").value(createResponse.getProjectName()),
                         jsonPath("totalTimeSpent").value(createResponse.getTotalTimeSpent()),
-                        jsonPath("completionPercent").value(updatedCompletionPercent)
+                        jsonPath("completionPercent").value(0)
                 );
 
     }
@@ -211,75 +230,15 @@ public class ProjectControllerTest {
         Integer updatedCompletionPercent = mockNeat.ints().range(0,100).val();
         ProjectUpdateRequest updateRequest = new ProjectUpdateRequest(
                 userId,
-                invalidProjectName,
-                null,
-                totalTimeSpent,
-                updatedCompletionPercent
-        );
-
-        //WHEN
-        utility.projectClient.updateProject(updateRequest, false)
-                //THEN
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    public void updateProject_editProjectNameExistingProject_productUpdated() throws Exception {
-        //GIVEN
-        String userId = mockNeat.users().valStr();
-        String projectName = mockNeat.strings().val();
-        ProjectCreateRequest createRequest = new ProjectCreateRequest(userId, projectName);
-
-        String jsonResponse = utility.projectClient.createProject(createRequest)
-                .andExpect(status().isCreated())
-                .andReturn().getResponse().getContentAsString();
-        ProjectResponse createResponse = mapper.readValue(jsonResponse, ProjectResponse.class);
-
-        String updatedProjectName = mockNeat.strings().val();
-        ProjectUpdateRequest updateRequest = new ProjectUpdateRequest(
-                createResponse.getUserId(),
-                createRequest.getProjectName(),
-                updatedProjectName,
-                createResponse.getTotalTimeSpent(),
-                createResponse.getCompletionPercent()
-        );
-
-        //WHEN
-        utility.projectClient.updateProject(updateRequest, true)
-                //THEN
-                .andExpect(status().isAccepted());
-        utility.projectClient.getProjectByProjectName(createResponse.getUserId(), updatedProjectName)
-                .andExpectAll(
-                        status().isOk(),
-                        jsonPath("userId").value(createResponse.getUserId()),
-                        jsonPath("projectName").value(updatedProjectName),
-                        jsonPath("totalTimeSpent").value(createResponse.getTotalTimeSpent()),
-                        jsonPath("completionPercent").value(createResponse.getCompletionPercent())
+                invalidProjectName
                 );
 
-    }
-
-    @Test
-    public void updateProject_editProjectNameNotExistingProject_responseBadRequest() throws Exception {
-        //GIVEN
-        String userId = mockNeat.users().valStr();
-        String invalidProjectName = mockNeat.strings().valStr();
-        String totalTimeSpent = mockNeat.localDates().toString();
-        Integer completionPercent = mockNeat.ints().range(0,100).val();
-        String updatedProjectName = mockNeat.strings().valStr();
-        ProjectUpdateRequest updateRequest = new ProjectUpdateRequest(
-                userId,
-                invalidProjectName,
-                updatedProjectName,
-                totalTimeSpent,
-                completionPercent
-        );
-
         //WHEN
-        utility.projectClient.updateProject(updateRequest, true)
+        utility.projectClient.updateProject(updateRequest)
                 //THEN
                 .andExpect(status().isNotFound());
     }
+
 
     @Test
     public void deleteProjectWithProjectName_existingProject_deletesProject() throws Exception {

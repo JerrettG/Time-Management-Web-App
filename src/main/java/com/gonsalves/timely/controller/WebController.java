@@ -29,11 +29,4 @@ public class WebController {
         model.addAttribute("userId", userId);
         return "project";
     }
-
-    @RequestMapping("/project/{projectName}/task/{taskName}")
-    public String task(@AuthenticationPrincipal OidcUser principal, Model model) {
-        String userId = principal.getPreferredUsername();
-        model.addAttribute("userId", userId);
-        return "task";
-    }
 }

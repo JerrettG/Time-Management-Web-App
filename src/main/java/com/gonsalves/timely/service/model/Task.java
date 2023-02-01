@@ -9,10 +9,7 @@ import java.sql.Time;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Builder
 @Data
@@ -38,10 +35,7 @@ public class Task {
                                 return partialTimeSpentResult;
                             return partialTimeSpentResult + ChronoUnit.SECONDS.between(LocalDateTime.parse(startDateTime.get()), LocalDateTime.parse(endDateTime.get()));
                         }, Long::sum);
-        Long hours = Math.abs(timeSpentSeconds/3600);
-        Long minutes = Math.abs(timeSpentSeconds % 3600 / 60);
-        Long seconds = Math.abs(timeSpentSeconds % 3600 % 60);
-        timeSpent = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        timeSpent = TimeSpentConverter.convertToString(timeSpentSeconds);
     }
 
     public void startTime() {
@@ -51,10 +45,16 @@ public class Task {
                 .orElse(new ArrayList<>()).add(timeLog);
     }
     public void stopTime() {
-        TimeLog timeLog = Optional.ofNullable(this.timeLogs)
-                .flatMap(timeLogs -> Optional.ofNullable(timeLogs.get(timeLogs.size()-1)))
-                .orElseThrow(() -> new IllegalStateException("Cannot stop task time for not started task"));
-        timeLog.setEndDateTime(LocalDateTime.now().toString());
+        Optional<TimeLog> timeLog = Optional.ofNullable(timeLogs)
+                        .flatMap(timeLogs -> Optional.ofNullable(timeLogs.get(timeLogs.size()-1)));
+        if (timeLog.isPresent()) {
+            TimeLog log = timeLog.get();
+            if (Objects.isNull(log.getEndDateTime())) {
+                log.setEndDateTime(LocalDateTime.now().toString());
+            } else {
+                throw new IllegalStateException("Cannot stop time for not started, or already completed time log.");
+            }
+        }
     }
 
 

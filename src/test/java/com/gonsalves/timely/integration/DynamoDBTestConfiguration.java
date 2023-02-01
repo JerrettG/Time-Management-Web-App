@@ -6,6 +6,7 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 
 
 @TestConfiguration
@@ -13,6 +14,7 @@ public class DynamoDBTestConfiguration {
 
 
     @Bean
+    @Primary
     public AmazonDynamoDB buildTestAmazonDynamoDB(@Value("${dynamodb.endpoint}") String dynamoEndpoint) {
         AwsClientBuilder.EndpointConfiguration endpointConfig = new
                 AwsClientBuilder.EndpointConfiguration(dynamoEndpoint,
@@ -22,6 +24,5 @@ public class DynamoDBTestConfiguration {
                 .standard()
                 .withEndpointConfiguration(endpointConfig)
                 .build();
-
     }
 }

@@ -3,6 +3,8 @@ import DataStore from "../../js/util/DataStore.js";;
 import ProjectClient from "../api/projectClient";
 import TaskClient from "../api/taskClient";
 import '../../static/css/style.css';
+
+
 /**
  * Logic needed for the shopping cart page
  */
@@ -12,8 +14,8 @@ class ProjectPage extends BaseClass {
         super();
         this.bindClassMethods([
             'renderTasks','onGetAllTasksForProject',
-            'onCreateTask', 'onDeleteTask', 'onEditProjectName',
-            'onStartTaskTimer', 'onStopTaskTimer', 'confirmDeletion',
+            'onUpdateTaskStatus', 'onCreateTask', 'onDeleteTask', 'onEditTaskName', 'onDisplayTaskInfo',
+            'onStartTaskTimer', 'onStopTaskTimer', 'confirmDeletion', 'onUpdateTask',
             'toggleDropdown', 'showPopup', 'closePopup','sortBy', 'clearSort'], this);
         this.dataStore = new DataStore();
     }
@@ -23,13 +25,10 @@ class ProjectPage extends BaseClass {
         this.taskClient = new TaskClient();
         let pathname = window.location.pathname;
         let projectName = decodeURIComponent(pathname.substring(pathname.lastIndexOf("/")+1, pathname.length));
+        this.projectName = projectName;
         this.projectId = `${userId}_${projectName}`;
-
-        document.getElementById("create-btn").addEventListener("click", event => {
-            document.querySelector(".popups-container").innerHTML += `
-               <div class="create-form-container popup">
-                <button type="button" class="close-popup-btn">x</button>
-                    <form class="create-form" id="create-task-form">
+        this.createTaskForm = `
+                    <form class="create-form form" id="create-task-form">
                         <h3>Create a task</h3>
                         <div class="form-group">
                             <p>Task name</p>
@@ -38,10 +37,10 @@ class ProjectPage extends BaseClass {
                         <div class="form-group">
                             <p>Status</p>
                             <select required name="status" id="status-input">
-                                <option>Planned</option>
-                                <option>In progress</option>
-                                <option>Under review</option>
-                                <option>Complete</option>
+                                <option value="Planned">Planned</option>
+                                <option value="In progress">In progress</option>
+                                <option value="Under review">Under review</option>
+                                <option value="Complete">Complete</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -49,7 +48,12 @@ class ProjectPage extends BaseClass {
                             <textarea form="create-task-form" name="notes" placeholder="Notes..." class="richTextEditor"></textarea>
                         </div>
                         <button>Submit</button>
-                    </form>
+                    </form> `
+        document.getElementById("create-btn").addEventListener("click", event => {
+            document.querySelector(".popups-container").innerHTML += `
+               <div class="create-form-container popup">
+                    <button type="button" class="close-popup-btn">x</button>
+                    ${this.createTaskForm}
                 </div>
             `;
             tinymce.init({
@@ -65,22 +69,32 @@ class ProjectPage extends BaseClass {
         await this.onGetAllTasksForProject();
     }
 
-    async renderProject() {
-
-    }
-
     async renderTasks() {
         let tasksDisplay = document.getElementById("display-table-data");
         const tasks = this.dataStore.get("tasks");
         let html = '';
         if (tasks && tasks.length > 0) {
             for (let task of tasks) {
+                let statuses = ["Planned", "In progress", "Under review", "Complete"];
+                let options = '';
+                statuses.forEach(
+                    status =>
+                        options += (status === task.status) ? `<option value="${status}" selected>${status}</option>`
+                            : `<option value="${status}">${status}</option>`);
+
                 html +=
                     `
                      <tr class="task">
-                        <td class="task-taskName">${task.taskName}</td>
+                        <td class="task-taskName" data-taskName="${task.taskName}" data-popup=".taskInfo-container">${task.taskName}</td>
                         <td class="task-timeSpent">${task.timeSpent}</td>
-                        <td class="task-status">${task.status}</td>
+                        <td class="task-status">
+                            <div class="select-container">
+                                <select name="status">
+                                    ${options}
+                                </select>
+                                <i class="fa-solid fa-caret-down"></i>
+                            </div>
+                        </td>
                         <td>
                             <button type="button" class="start-btn">Start</button>
                             <button type="button" class="stop-btn">Stop</button>
@@ -98,6 +112,13 @@ class ProjectPage extends BaseClass {
             );
             document.querySelectorAll(".delete-btn").forEach(
                 deleteBtn => deleteBtn.addEventListener("click", this.confirmDeletion));
+            document.querySelectorAll(".task-taskName").forEach(
+                taskName => {
+                    taskName.addEventListener("focusout", this.onEditTaskName);
+                    taskName.addEventListener("click", this.onDisplayTaskInfo);
+                });
+            document.querySelectorAll('.task-status select').forEach(
+                statusSelect => statusSelect.addEventListener("change", this.onUpdateTaskStatus));
         } else {
             document.querySelector(".display").innerHTML =
                 `
@@ -105,7 +126,7 @@ class ProjectPage extends BaseClass {
                     ${this.createTaskForm}
                 `;
             tinymce.init({selector: '.richTextEditor'});
-            document.getElementById("create-form").addEventListener("submit", this.onCreateTask);
+            document.querySelector(".create-form").addEventListener("submit", this.onCreateTask);
         }
     }
 
@@ -114,7 +135,7 @@ class ProjectPage extends BaseClass {
         let result = await this.taskClient.getAllTasksForProject(this.projectId, this.errorHandler);
         this.dataStore.set("tasks", result);
         if (result) {
-            this.showMessage("Projects loaded successfully");
+            // this.showMessage("Projects loaded successfully");
         } else {
             this.errorHandler("Error getting product catalog. Try again...");
         }
@@ -132,7 +153,8 @@ class ProjectPage extends BaseClass {
 
         let result = await this.taskClient.createTask(this.projectId, taskName, notes, status, this.errorHandler);
         if (result) {
-            this.showMessage(`Task with name ${taskName} created successfully`);
+            this.projectClient.updateProject(userId, this.projectName, this.errorHandler);
+            // this.showMessage(`Task with name ${taskName} created successfully`);
             if (createForm.id === "create-task-form-popup") {
                 this.closePopup(event);
             }
@@ -147,7 +169,8 @@ class ProjectPage extends BaseClass {
         let taskName = deleteBtn.getAttribute("data-taskName");
         let result = await this.taskClient.deleteTask(this.projectId, taskName, this.errorHandler);
         if (result) {
-            this.showMessage(`Task with ${taskName} has been deleted successfully`);
+            this.projectClient.updateProject(userId, this.projectName, this.errorHandler);
+            // this.showMessage(`Task with ${taskName} has been deleted successfully`);
             this.closePopup(event);
             await this.onGetAllTasksForProject();
         } else {
@@ -156,12 +179,12 @@ class ProjectPage extends BaseClass {
     }
 
     async confirmDeletion(event) {
-        let taskName = event.srcElement.closest(".task").querySelector(".task-taskName").innerText;
+        let taskName = event.srcElement.closest(".task").querySelector(".task-taskName").getAttribute("data-taskName");
         let popupsContainer = document.querySelector(".popups-container");
         popupsContainer.innerHTML +=
             `
             <div class="confirmation-delete-container popup">
-                <div class="confirmation-delete">
+                <div class="confirmation-delete form">
                     <p>Are you sure you want to delete <strong>${taskName}?</strong></p>
                     <p>Once this action has been completed, it cannot be undone.</p>
                     <div class="form-group btns-container">
@@ -177,8 +200,92 @@ class ProjectPage extends BaseClass {
         this.showPopup(event);
     }
 
-    async onEditProjectName(event) {
+    async onUpdateTaskStatus(event) {
+        let statusSelect = event.srcElement;
+        let status = statusSelect[statusSelect.selectedIndex].getAttribute("value");
+        let taskName = statusSelect.closest(".task").querySelector(".task-taskName").getAttribute("data-taskName");
 
+        let result = await this.taskClient.updateTaskStatus(this.projectId, taskName, status, this.errorHandler);
+        if (result) {
+            await this.projectClient.updateProject(userId, this.projectName, this.errorHandler);
+            // this.showMessage(`Task with name ${taskName} status was updated successfully`);
+        } else {
+            this.errorHandler("Error updating task status. Try again...");
+        }
+    }
+
+    async onEditTaskName(event) {
+        let taskName = event.srcElement;
+        taskName.contentEditable = false;
+        let previousTaskName = taskName.getAttribute("data-taskName");
+        let updatedTaskName = taskName.innerText.trim();
+        taskName.innerText = updatedTaskName;
+
+        if (previousTaskName !== updatedTaskName) {
+            let result = await this.taskClient.editTaskName(this.projectId, previousTaskName, updatedTaskName, this.errorHandler);
+            if (result) {
+                taskName.setAttribute("data-taskName", updatedTaskName);
+                // this.showMessage("Task name updated successfully!");
+            } else {
+                this.errorHandler("Error updating task name. Try again...");
+            }
+        }
+    }
+
+    async onDisplayTaskInfo(event) {
+        let taskName = event.target.getAttribute("data-taskName");
+        let task = await this.taskClient.getTaskByTaskName(this.projectId, taskName);
+
+        let popupsContainer = document.querySelector(".popups-container");
+        popupsContainer.innerHTML =
+            `
+             <div class="taskInfo-container popup">
+                <button type="button" class="close-popup-btn">x</button>
+                <form data-taskName="${taskName}" class="task-info form" id="task-info">
+                    <div class="form-group">
+                        <p>Task name</p>
+                        <input name="taskName" value="${taskName}"> 
+                    </div>
+                    <div class="form-group">
+                        <p>Notes</p>
+                        <textarea name="notes" class="richTextEditor">${task.notes ? task.notes : ""}</textarea>
+                    </div>
+                    <button type="submit" id="apply-changes">Apply</button>
+                </form>
+            </div>
+            `;
+        tinymce.init({
+            selector: '.richTextEditor'
+        });
+        document.querySelector(".close-popup-btn").addEventListener("click", this.closePopup);
+        document.querySelector("#task-info").addEventListener("submit", this.onUpdateTask);
+        this.showPopup(event);
+    }
+
+    async onUpdateTask(event) {
+        event.preventDefault();
+        let taskInfo = event.target;
+        let formData = new FormData(taskInfo);
+        let previousTaskName = taskInfo.getAttribute("data-taskName");
+        let currentTaskName = formData.get("taskName");
+        let notes = formData.get("notes");
+        if (currentTaskName !== previousTaskName) {
+            let result = await this.taskClient.editTaskName(this.projectId, previousTaskName, currentTaskName, this.errorHandler);
+            if (result) {
+                // this.showMessage(`Task with name ${previousTaskName} updated name successfully`);
+            } else {
+                this.errorHandler("Error updating task name. Try again...");
+            }
+        }
+
+        let result = await this.taskClient.updateTaskNotes(this.projectId, currentTaskName, notes, this.errorHandler);
+        if (result) {
+            // this.showMessage(`Task with name ${currentTaskName} notes updated successfully}`);
+            this.closePopup(event);
+            this.onGetAllTasksForProject();
+        } else {
+            this.errorHandler("Error trying to update notes. Try again...");
+        }
     }
 
     async onStartTaskTimer(event) {
@@ -188,8 +295,10 @@ class ProjectPage extends BaseClass {
 
         let result = this.taskClient.startTaskTime(this.projectId, taskName, this.errorHandler);
         if (result) {
-            task.querySelector(".task-status").innerText = "In progress";
-            this.showMessage(`Task with name ${taskName} has been started`);
+            let statusSelect = task.querySelector(".task-status select");
+            statusSelect[statusSelect.selectedIndex].removeAttribute("selected");
+            statusSelect[1].setAttribute("selected", true);
+            // this.showMessage(`Task with name ${taskName} has been started`);
         } else {
             this.errorHandler("Error starting task. Try again...");
         }
@@ -200,9 +309,12 @@ class ProjectPage extends BaseClass {
         let task = stopBtn.closest(".task");
         let taskName = task.querySelector(".task-taskName").innerText;
 
-        let result = this.taskClient.stopTaskTime(this.projectId, taskName, this.errorHandler);
+        let result = await this.taskClient.stopTaskTime(this.projectId, taskName, this.errorHandler);
         if (result) {
-            this.showMessage(`Task with name ${taskName} has been stopped`);
+            result = this.projectClient.updateProject(userId, this.projectName, this.errorHandler);
+            if (result)
+                // this.showMessage("Project time has been updated");
+            // this.showMessage(`Task with name ${taskName} has been stopped`);
             await this.onGetAllTasksForProject();
         } else {
             this.errorHandler("Error stopping task. Try again...");
@@ -238,7 +350,7 @@ class ProjectPage extends BaseClass {
         } else {
             tasks.sort((a, b) => {
                 return b[sortCategory].localeCompare(a[sortCategory]);
-            })
+            });
         }
         this.dataStore.set("tasks", tasks);
     }

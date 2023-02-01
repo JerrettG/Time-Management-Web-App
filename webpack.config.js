@@ -10,7 +10,8 @@ module.exports = (env, argv) => ({
       app:'./src/main/resources/js/app.js',
       index: './src/main/resources/js/pages/index.js',
       project: './src/main/resources/js/pages/project.js',
-      task: './src/main/resources/js/pages/task.js'
+      task: './src/main/resources/js/pages/task.js',
+      product: './src/main/resources/js/pages/product.js'
   },
   output: {
     path: path.resolve(__dirname, './target/classes/static'),

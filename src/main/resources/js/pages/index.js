@@ -21,30 +21,30 @@ class IndexPage extends BaseClass {
     async mount() {
         this.projectClient = new ProjectClient();
         this.taskClient = new TaskClient();
-        this.dataStore.addChangeListener(this.renderProjects);
-        await this.onGetAllProjectsByUser();
+        this.createProjectForm =
+            `<form class="create-form form create-project-form">
+                <h3>Create a project</h3>
+                <div class="form-group">
+                    <p>Project name</p>
+                    <input required name="projectName" placeholder="Project name" id="projectName-input">
+                </div>
+<!--                        <div class="form-group" style="display:flex;flex-direction: row; column-gap: 1em;">-->
+<!--                            <span>Add a task</span>-->
+<!--                            <button type="button" class="add-task-btn">+</button>-->
+<!--                        </div>-->
+                <div class="form-group">
+                    <p>Task name</p>
+                    <input required name="taskName" placeholder="Task name">
+                </div>
+                <button>Submit</button>
+            </form>`;
         document.getElementById("create-btn").addEventListener("click", (event) => {
 
             document.querySelector(".popups-container").innerHTML +=
                 `
                 <div class="create-form-container popup">
                     <button type="button" class="close-popup-btn">x</button>
-                    <form class="create-form create-project-form">
-                        <h3>Create a project</h3>
-                        <div class="form-group">
-                            <p>Project name</p>
-                            <input required name="projectName" placeholder="Project name" id="projectName-input">
-                        </div>
-                        <div class="form-group" style="display:flex;flex-direction: row;">
-                            <span>Add a task</span>
-                            <button type="button" class="add-task-btn">+</button>
-                        </div>
-                        <div class="form-group">
-                            <p>Task name</p>
-                            <input required name="taskName" placeholder="Task name">
-                        </div>
-                        <button>Submit</button>
-                    </form>
+                    ${this.createProjectForm}
                 </div>
                 `;
             document.querySelector(".close-popup-btn").addEventListener("click", this.closePopup);
@@ -53,6 +53,8 @@ class IndexPage extends BaseClass {
         });
         document.getElementById("apply-sort-btn").addEventListener("click", this.sortBy);
         document.getElementById("clear-sort-btn").addEventListener("click", this.clearSort);
+        this.dataStore.addChangeListener(this.renderProjects);
+        await this.onGetAllProjectsByUser();
     }
 
     async renderProjects() {
@@ -76,27 +78,10 @@ class IndexPage extends BaseClass {
             document.querySelectorAll(".delete-btn").forEach(
                 deleteBtn => deleteBtn.addEventListener("click", this.confirmDeletion));
         } else {
-            document.querySelector(".projects-display").innerHTML =
+            document.querySelector(".display").innerHTML =
                 `
                     <h1>You don't have any projects yet!</h1>
-                    <div class="create-form-container">
-                        <span>Create a project</span>
-                        <form class="create-form">
-                            <div class="form-group">
-                                <p>Project name</p>
-                                <input name="projectName" placeholder="Project name" id="projectName-input">
-                            </div>
-                            <div class="form-group" style="display:flex;flex-direction: row;">
-                                <span>Add a task</span>
-                                <button type="button" class="add-task-btn">+</button>
-                            </div>
-                            <div class="form-group">
-                                <p>Task name</p>
-                                <input name="taskName" placeholder="Task name">
-                            </div>
-                            <button>Submit</button>
-                        </form>
-                    </div>
+                    ${this.createProjectForm}
                 `;
             document.querySelector(".create-form").addEventListener("submit", this.onCreateProject);
         }
@@ -107,7 +92,7 @@ class IndexPage extends BaseClass {
         let result = await this.projectClient.getAllProjectsByUser(userId, this.errorHandler);
         this.dataStore.set("projects", result);
         if (result) {
-            this.showMessage("Projects loaded successfully");
+            // // this.showMessage("Projects loaded successfully");
         } else {
             this.errorHandler("Error getting product catalog. Try again...");
         }
@@ -124,17 +109,16 @@ class IndexPage extends BaseClass {
         const taskNames = formData.getAll("taskName");
         let result = await this.projectClient.createProject(userId, projectName, this.errorHandler);
         if (result) {
-            this.showMessage(`Project with name ${projectName} created successfully`);
+            // this.showMessage(`Project with name ${projectName} created successfully`);
             for (let taskName of taskNames) {
-                let result = await this.taskClient.createTask(`${userId}_${projectName}`, taskName, "", "Planned", this.errorHandler);
+                let result = await this.taskClient.createTask(`${userId}_${projectName}`, taskName.trim(), "", "Planned", this.errorHandler);
                 if (result) {
-                    this.showMessage(`Task with name ${taskName} created successfully`);
+                    // // this.showMessage(`Task with name ${taskName} created successfully`);
                 } else {
                     this.errorHandler("Error creating task. Try again....")
                 }
             }
-            this.closePopup(event);
-            await this.onGetAllProjectsByUser();
+            window.location.reload();
         } else {
             this.errorHandler("Error creating project. Try again...")
         }
@@ -147,7 +131,7 @@ class IndexPage extends BaseClass {
         let result = await this.projectClient.deleteProject(userId, projectName, this.errorHandler);
 
         if (result) {
-            this.showMessage(`Project with name ${projectName} deleted successfully`);
+            // // this.showMessage(`Project with name ${projectName} deleted successfully`);
             this.closePopup(event);
             await this.onGetAllProjectsByUser();
         } else {
@@ -162,7 +146,7 @@ class IndexPage extends BaseClass {
         popupsContainer.innerHTML +=
             `
             <div class="confirmation-delete-container popup">
-                <div class="confirmation-delete">
+                <div class="confirmation-delete form">
                     <p>Are you sure you want to delete <strong>${projectName}?</strong></p>
                     <p>Once this action has been completed, it cannot be undone.</p>
                     <div class="form-group">

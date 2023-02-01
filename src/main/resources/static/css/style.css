@@ -16,6 +16,22 @@
     text-decoration: none;
     margin: 0;
 }
+img {
+    width: 50%;
+}
+
+.images-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+.group {
+    display: flex;
+    flex-direction: column;
+    row-gap: 1.5em;
+    margin: 1em;
+}
 
 a {
     text-decoration: none;
@@ -29,18 +45,6 @@ a:hover {
 
 body {
     height: 100vh;
-}
-.task-taskName {
-    border: solid thin white;
-    transition: all .2s ease;
-}
-.task-taskName:hover {
-    border-color: gray;
-    cursor: text;
-}
-
-button:hover {
-    cursor: pointer;
 }
 
 .navbar {
@@ -92,6 +96,42 @@ button:hover {
 }
 .nav-link:hover > a {
     color: var(--nav-color);
+}
+
+.product_overview {
+    display: flex;
+    flex-direction: column;
+    row-gap: 1em;
+    padding: 1em 2em;
+}
+.task-taskName {
+    transition: all .2s ease;
+}
+.task-taskName:hover {
+    cursor: pointer;
+    color: var(--link-hover-color);
+}
+
+.select-container {
+    border: solid thin white;
+}
+
+.task-status select{
+    padding: .5em;
+    -webkit-appearance: none;
+    border: none;
+}
+
+.task-status select:focus {
+    outline: none;
+}
+
+.select-container:hover {
+    border-color: black;
+}
+
+button:hover {
+    cursor: pointer;
 }
 
 .loading-spinner  {
@@ -168,13 +208,13 @@ button:hover {
     width: 75px;
 }
 
-.create-form-container, .confirmation-delete-container {
+.popup {
     border: solid thin gray;
     border-radius: 5px;
     background: white;
 }
 
-.create-form, .confirmation-delete {
+.form {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -228,17 +268,17 @@ button:hover {
     padding: 0;
 }
 
-.confirmation-delete .delete-btn {
+.form .delete-btn {
     color: white;
     background: var(--delete-color);
     border: none;
     padding: 1em;
 }
 
-.confirmation-delete .delete-btn:enabled:hover {
+.form .delete-btn:enabled:hover {
     background: rgba(var(--delete-color-rgb), 75%);
 }
-.confirmation-delete .delete-btn:disabled {
+.form .delete-btn:disabled {
     background: #a94b4b;
     color: lightgrey;
 }

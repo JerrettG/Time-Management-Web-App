@@ -7,9 +7,7 @@ import com.gonsalves.timely.repository.ProjectRepository;
 import com.gonsalves.timely.repository.model.ProjectEntity;
 import com.gonsalves.timely.repository.model.TaskEntity;
 import com.gonsalves.timely.repository.model.TimeLogEntity;
-import com.gonsalves.timely.service.model.Project;
-import com.gonsalves.timely.service.model.Task;
-import com.gonsalves.timely.service.model.TimeLog;
+import com.gonsalves.timely.service.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -68,6 +66,21 @@ public class ProjectService {
     }
 
     public void updateProject(Project project) {
+        List<TaskServiceClient.Task> tasks = taskServiceClient.getAllTasksForProject(project.getProjectId());
+        long totalTimeSpent = tasks.stream()
+                .reduce(
+                        0L,
+                        (partialTimeSpent, task) -> partialTimeSpent + TimeSpentConverter.convertFromString(task.getTimeSpent()),
+                        Long::sum);
+        double numCompletedTasks = tasks.stream()
+                .reduce(
+                        0.0,
+                        (count, task) -> (task.getStatus().equals(StatusEnum.COMPLETE.getStatus())) ? (count + 1.0) : count,
+                        Double::sum);
+        int completionPercent = (int) ((numCompletedTasks / tasks.size()) * 100);
+        String updatedTimeSpent = TimeSpentConverter.convertToString(totalTimeSpent);
+        project.setTotalTimeSpent(updatedTimeSpent);
+        project.setCompletionPercent(completionPercent);
         ProjectEntity entity = convertToEntity(project);
         try {
             projectRepository.updateProject(entity);
@@ -81,14 +94,14 @@ public class ProjectService {
         ProjectEntity entity = convertToEntity(project);
         projectRepository.deleteProject(entity);
         String projectId = String.format("%s_%s", project.getUserId(), project.getProjectName());
-        ResponseEntity<String> response = taskServiceClient.deleteAllTasksForProject(projectId);
+        taskServiceClient.deleteAllTasksForProject(projectId);
     }
 
 
     public ProjectEntity convertToEntity(Project project) {
         return new ProjectEntity(
                 project.getUserId(),
-                project.getProjectName(),
+                project.getProjectName().strip(),
                 project.getProjectId(),
                 project.getCreationDate(),
                 project.getTotalTimeSpent(),

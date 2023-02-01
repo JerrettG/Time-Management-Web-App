@@ -38,7 +38,7 @@ export default class TaskClient extends BaseClass {
 
     async getTaskByTaskName(projectId, taskName, errorCallback) {
         try {
-            const response = await this.client.get(`/api/v1/task?projectId=${projectId}&taskName=${taskName}`);
+            const response = await this.client.get(`/api/v1/task/?projectId=${projectId}&taskName=${taskName}`);
             return response.data;
         } catch (error) {
             this.handleError('getTaskByTaskName', error, errorCallback);
@@ -61,40 +61,44 @@ export default class TaskClient extends BaseClass {
         }
     }
 
-    async editTaskName(projectId, taskName, updatedTaskName, notes, timeSpent, timeLogs, status, errorCallback) {
+    async editTaskName(projectId, taskName, updatedTaskName, errorCallback) {
         try {
-            const response = await this.client.put(`/api/v1/task?editName=true`,
+            return await this.client.put(`/api/v1/task?editName=true`,
                 {
                     projectId: projectId,
                     taskName: taskName,
                     updatedTaskName: updatedTaskName,
-                    notes: notes,
-                    timeSpent: timeSpent,
-                    timeLogs: timeLogs,
-                    status: status
                 }
-            )
-            return response.data;
+            );
         } catch (error) {
             this.handleError('editTaskName', error, errorCallback)
         }
     }
-
-    async updateTask(projectId, taskName, updatedTaskName, notes, timeSpent, timeLogs, status, errorCallback) {
+    async updateTaskNotes(projectId, taskName, notes, errorCallback) {
         try {
-            const response = await this.client.put(`/api/v1/task`,
+            return await this.client.put(`/api/v1/task`,
                 {
                     projectId: projectId,
                     taskName: taskName,
-                    notes: notes,
-                    timeSpent: timeSpent,
-                    timeLogs: timeLogs,
+                    notes: notes
+                }
+            );
+        } catch (error) {
+            this.handleError('updateTaskNotes', error, errorCallback);
+        }
+    }
+
+    async updateTaskStatus(projectId, taskName, status, errorCallback) {
+        try {
+            return await this.client.put(`/api/v1/task`,
+                {
+                    projectId: projectId,
+                    taskName: taskName,
                     status: status
                 }
-            )
-            return response.data;
+            );
         } catch (error) {
-            this.handleError('updateTask', error, errorCallback)
+            this.handleError('updateTaskStatus', error, errorCallback)
         }
     }
 
@@ -108,11 +112,10 @@ export default class TaskClient extends BaseClass {
 
     async startTaskTime(projectId, taskName, errorCallback) {
         try {
-            const response = await this.client.put('/api/v1/task/start', {
+            return await this.client.put('/api/v1/task/start', {
                 projectId: projectId,
                 taskName: taskName
             });
-            return response.data;
         } catch (error) {
             this.handleError('startTaskTime', error, errorCallback);
         }
@@ -120,11 +123,10 @@ export default class TaskClient extends BaseClass {
 
     async stopTaskTime(projectId, taskName, errorCallback) {
         try {
-            const response = await this.client.put('/api/v1/task/stop', {
+            return await this.client.put('/api/v1/task/stop', {
                 projectId: projectId,
                 taskName: taskName
             });
-            return response.data;
         } catch (error) {
             this.handleError('stopTaskTime', error, errorCallback);
         }

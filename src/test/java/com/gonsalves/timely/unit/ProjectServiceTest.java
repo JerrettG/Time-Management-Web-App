@@ -20,6 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -87,7 +88,7 @@ public class ProjectServiceTest {
                 completionPercent
         );
 
-        when(projectRepository.getProjectByProjectName(userId, projectName)).thenReturn(entity);
+        when(projectRepository.getProjectByProjectName(userId, projectName)).thenReturn(Optional.ofNullable(entity));
 
         Project result = projectService.getProjectByProjectName(userId, projectName);
 
@@ -134,7 +135,7 @@ public class ProjectServiceTest {
         project.setUserId(userId);
         project.setProjectName(projectName);
 
-        when(projectRepository.getProjectByProjectName(userId, projectName)).thenReturn(new ProjectEntity());
+        when(projectRepository.getProjectByProjectName(userId, projectName)).thenReturn(Optional.ofNullable(new ProjectEntity()));
         doNothing().when(projectRepository).createProject(any(ProjectEntity.class));
 
         assertThrows(ProjectAlreadyExistsException.class, () -> projectService.createProject(project));
@@ -198,7 +199,7 @@ public class ProjectServiceTest {
         project.setUserId(userId);
         project.setProjectName(projectName);
 
-        when(projectRepository.getProjectByProjectName(userId, projectName)).thenReturn(new ProjectEntity());
+        when(projectRepository.getProjectByProjectName(userId, projectName)).thenReturn(Optional.ofNullable(new ProjectEntity()));
 
         projectService.deleteProject(project);
 

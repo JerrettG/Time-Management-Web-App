@@ -43,8 +43,8 @@ public class Utility {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(mapper.writeValueAsString(request)));
         }
-        public ResultActions updateProject(ProjectUpdateRequest request, boolean editName) throws Exception {
-            return mockMvc.perform(put("/api/v1/project?editName={editName}", editName)
+        public ResultActions updateProject(ProjectUpdateRequest request) throws Exception {
+            return mockMvc.perform(put("/api/v1/project")
                     .accept(MediaType.APPLICATION_JSON)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(mapper.writeValueAsString(request)));

@@ -1,9 +1,13 @@
 package com.gonsalves.timely;
 
+import com.gonsalves.timely.integration.DynamoDBMapperTestConfiguration;
+import com.gonsalves.timely.integration.DynamoDBTestConfiguration;
+import com.gonsalves.timely.integration.WebSecurityTestConfig;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJson;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -16,10 +20,10 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@SpringBootTest(webEnvironment = RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
 @ContextConfiguration(initializers = {
-        DynamoDbInitializer.class
+        DynamoDbInitializer.class,
 })
 @AutoConfigureMockMvc
 @AutoConfigureJson
