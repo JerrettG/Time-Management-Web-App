@@ -21,3 +21,7 @@ This app is a Project and Time management tool that allows users to organize and
 
 # Current Development Demo
 
+
+
+https://user-images.githubusercontent.com/100180211/216152789-75449f4d-90ed-4689-9eca-9f4caa3addb0.mov
+
